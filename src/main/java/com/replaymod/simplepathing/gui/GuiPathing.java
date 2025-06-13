@@ -703,8 +703,9 @@ public class GuiPathing {
                     if (!replayHandler.isCameraView() && !neverSpectator) {
                         spectatedId = replayHandler.getOverlay().getMinecraft().getCameraEntity().getId();
                     }
+                    float fov = (float) replayHandler.getOverlay().getMinecraft().options.getFov().getValue();
                     timeline.addPositionKeyframe(time, camera.getX(), camera.getY(), camera.getZ(),
-                            camera.getYaw(), camera.getPitch(), camera.roll, spectatedId);
+                            camera.getYaw(), camera.getPitch(), camera.roll, fov, spectatedId);
                     mod.setSelected(path, time);
                 }
                 break;

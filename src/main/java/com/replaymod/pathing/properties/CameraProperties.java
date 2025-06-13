@@ -15,8 +15,11 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+
+import net.minecraft.client.option.GameOptions;
 
 /**
  * Properties for camera positioning.
@@ -25,6 +28,7 @@ public class CameraProperties extends AbstractPropertyGroup {
     public static final CameraProperties GROUP = new CameraProperties();
     public static final Position POSITION = new Position();
     public static final Rotation ROTATION = new Rotation();
+    public static final Fov FOV = new Fov();
     private CameraProperties() {
         super("camera", "replaymod.gui.camera");
     }
@@ -113,6 +117,39 @@ public class CameraProperties extends AbstractPropertyGroup {
             } finally {
                 reader.endArray();
             }
+        }
+    }
+
+    public static class Fov extends AbstractProperty<Float> {
+        public final PropertyPart<Float> VALUE = new PropertyParts.ForFloat(this, true);
+
+        private Fov() {
+            super("fov", "replaymod.gui.fov", GROUP, 70f);
+        }
+
+        @Override
+        public Collection<PropertyPart<Float>> getParts() {
+            return Collections.singletonList(VALUE);
+        }
+
+        @Override
+        public void applyToGame(Float value, @NonNull Object replayHandler) {
+            GameOptions options = ((ReplayHandler) replayHandler).getOverlay().getMinecraft().options;
+            //#if MC>=11900
+            ((com.replaymod.core.mixin.SimpleOptionAccessor<Double>) (Object) options.getFov()).setRawValue((double) value);
+            //#else
+            //$$ options.fov = value;
+            //#endif
+        }
+
+        @Override
+        public void toJson(JsonWriter writer, Float value) throws IOException {
+            writer.value(value);
+        }
+
+        @Override
+        public Float fromJson(JsonReader reader) throws IOException {
+            return (float) reader.nextDouble();
         }
     }
 }
