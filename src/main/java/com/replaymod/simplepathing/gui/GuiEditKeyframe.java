@@ -218,6 +218,7 @@ public abstract class GuiEditKeyframe<T extends GuiEditKeyframe<T>> extends Abst
         public final GuiNumberField yawField = newGuiNumberField().setSize(60, 20).setPrecision(5);
         public final GuiNumberField pitchField = newGuiNumberField().setSize(60, 20).setPrecision(5);
         public final GuiNumberField rollField = newGuiNumberField().setSize(60, 20).setPrecision(5);
+        public final GuiNumberField fovField = newGuiNumberField().setSize(60, 20).setPrecision(5);
 
         public final InterpolationPanel interpolationPanel = new InterpolationPanel();
 
@@ -230,7 +231,8 @@ public abstract class GuiEditKeyframe<T extends GuiEditKeyframe<T>> extends Abst
                             new GuiLabel().setI18nText("replaymod.gui.editkeyframe.ypos"), yField,
                             new GuiLabel().setI18nText("replaymod.gui.editkeyframe.campitch"), pitchField,
                             new GuiLabel().setI18nText("replaymod.gui.editkeyframe.zpos"), zField,
-                            new GuiLabel().setI18nText("replaymod.gui.editkeyframe.camroll"), rollField);
+                            new GuiLabel().setI18nText("replaymod.gui.editkeyframe.camroll"), rollField,
+                            new GuiLabel().setI18nText("replaymod.gui.editkeyframe.fov"), fovField);
 
             inputs.setLayout(new VerticalLayout().setSpacing(10)).addElements(new VerticalLayout.Data(0.5, false),
                     positionInputs, interpolationPanel);
@@ -249,8 +251,9 @@ public abstract class GuiEditKeyframe<T extends GuiEditKeyframe<T>> extends Abst
                 pitchField.setValue(rot.getMiddle());
                 rollField.setValue(rot.getRight());
             });
+            this.keyframe.getValue(CameraProperties.FOV).ifPresent(fovField::setValue);
 
-            link(xField, yField, zField, yawField, pitchField, rollField, timeMinField, timeSecField, timeMSecField);
+            link(xField, yField, zField, yawField, pitchField, rollField, fovField, timeMinField, timeSecField, timeMSecField);
 
             popup.invokeAll(IGuiLabel.class, e -> e.setColor(Colors.BLACK));
         }
@@ -260,7 +263,8 @@ public abstract class GuiEditKeyframe<T extends GuiEditKeyframe<T>> extends Abst
             SPTimeline timeline = guiPathing.getMod().getCurrentTimeline();
             Change positionChange = timeline.updatePositionKeyframe(time,
                     xField.getDouble(), yField.getDouble(), zField.getDouble(),
-                    yawField.getFloat(), pitchField.getFloat(), rollField.getFloat()
+                    yawField.getFloat(), pitchField.getFloat(), rollField.getFloat(),
+                    fovField.getFloat()
             );
             if (interpolationPanel.getSettingsPanel() == null) {
                 // The last keyframe doesn't have interpolator settings because there is no segment following it
